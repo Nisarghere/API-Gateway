@@ -9,5 +9,7 @@ app.use(cookieParser())
 
 app.use('/auth', authRouter)
 app.use('/publish', apiRouter)
+app.use('/apis', apiRouter)
+
 
 module.exports = app

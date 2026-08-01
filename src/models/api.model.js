@@ -56,6 +56,6 @@ const ApiSchema = new mongoose.Schema(
   },
 );
 
-const ApiModel = mongoose.model("publisher", ApiSchema);
+const ApiModel = mongoose.model("api", ApiSchema);
 
 module.exports = ApiModel;
