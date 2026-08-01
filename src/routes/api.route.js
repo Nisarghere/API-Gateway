@@ -4,7 +4,7 @@ const { authMiddleware } = require("../middlewares/auth.middleware");
 
 const router = Router()
 
-router.post('/api',authMiddleware, apiController )
+router.post('/publish',authMiddleware, apiController )
 router.get('/', authMiddleware, getApiController)
 router.post('/:apiId/subscribe', authMiddleware, useApiKeyController)
 

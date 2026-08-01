@@ -50,6 +50,16 @@ const ApiSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    ratelimit:{
+      window:{
+        type:Number,
+        default:60
+      },
+      max:{
+        type:Number,
+        default:100
+      }
+    }
   },
   {
     timestamps: true,

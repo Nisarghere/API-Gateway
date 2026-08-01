@@ -28,12 +28,12 @@ const subscriptionSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-subscriptionSchema.pre("save", async function (next) {
-  if (!this.isModified("apiKey")) return;
+// subscriptionSchema.pre("save", async function (next) {
+//   if (!this.isModified("apiKey")) return;
 
-  const hashKey = await bcrypt.hash(this.apiKey, 10);
-  this.apiKey = hashKey;
-});
+//   const hashKey = await bcrypt.hash(this.apiKey, 10);
+//   this.apiKey = hashKey;
+// });
 
 const subscriptionModel = mongoose.model("subscription", subscriptionSchema);
 
