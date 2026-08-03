@@ -55,7 +55,7 @@ const ApiSchema = new mongoose.Schema(
         type:Number,
         default:60
       },
-      max:{
+      requests:{
         type:Number,
         default:100
       }

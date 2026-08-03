@@ -18,6 +18,10 @@ const subscriptionSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    ratelimit:{
+      window:Number,
+      requests:Number
+    },
     status: {
       type: String,
       enum: ["ACTIVE", "INACTIVE"],

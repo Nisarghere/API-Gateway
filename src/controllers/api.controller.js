@@ -3,9 +3,9 @@ const subscriptionModel = require("../models/subscription.model");
 const crypto = require("crypto");
 
 exports.apiController = async (req, res) => {
-  const { title, baseurl, endpoints, version } = req.body;
+  const { title, baseurl, endpoints, ratelimit,  version } = req.body;
 
-  if (!title || !baseurl || !endpoints || !version) {
+  if (!title || !baseurl || !endpoints || !version || !ratelimit) {
     return res.status(400).json({
       message: "All fields are required.",
     });
@@ -34,6 +34,7 @@ exports.apiController = async (req, res) => {
       publisher: req.user.userId,
       title,
       baseUrl: baseurl,
+      ratelimit:ratelimit,
       endpoints,
       version,
     });
@@ -64,7 +65,7 @@ exports.useApiKeyController = async (req, res) => {
 
   if (!apiId) {
     return res.status(400).json({
-      message: "bad response",
+      message: "400 bad request",
     });
   }
 
@@ -97,6 +98,7 @@ exports.useApiKeyController = async (req, res) => {
       consumer: req.user.userId,
       api:api._id,
       apiKey,
+      ratelimit:api.ratelimit,
       status:"ACTIVE"
     })
 
