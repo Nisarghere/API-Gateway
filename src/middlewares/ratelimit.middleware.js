@@ -1,41 +1,37 @@
-const { createClient } = require("redis")
+const { createClient } = require("redis");
 
 const redisClient = createClient({
-  url: "redis://localhost:6379"
-})
+  url: "redis://localhost:6379",
+});
 
-redisClient.on("error", (err)=>{
-    console.log("Redis Error:", err)
-})
+redisClient.on("error", (err) => {
+  console.log("Redis Error:", err);
+});
 
-(async()=>{
+(async () => {
+  await redisClient.connect();
+})();
 
-    await redisClient.connect();
-})
+exports.rateLimiterMW = async (req, res, next) => {
+  try {
+    const subscription = req.subscription;
 
+    const key = `rate-limit:user:${subscription._id}`;
 
-exports.rateLimiterMW = async(req, res, next) => {
-try{
+    const count = await redisClient.incr(key);
 
-    const subscription = req.subscription
-   
-   const key = `rate-limit:user:${subscription._id}`
+    if (count === 1) {
+      await redisClient.expire(key, subscription.ratelimit.window);
+    }
 
-   const count = await redisClient.incr(key)
+    if (count > subscription.ratelimit.requests) {
+      return res.status(429).json({
+        message: "Too many requests!",
+      });
+    }
 
-   if (count === 1){
-       await redisClient.expire(key, subscription.ratelimit.window)
-   }
-
-   if (count > subscription.ratelimit.requests){
-       return res.status(429).json({
-           message:"Too many requests!"
-       })
-   }
-
-   next()
-} catch(err){
-    next(err)
-}
-
-}
+    next();
+  } catch (err) {
+    next(err);
+  }
+};
