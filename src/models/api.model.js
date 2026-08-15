@@ -7,12 +7,22 @@ const ApiSchema = new mongoose.Schema(
       ref: "user",
       required: true,
     },
-
+    logo:{
+      type:String,
+      required:false
+    },
     title: {
       type: String,
       required: true,
       trim: true,
     },
+
+    description: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    
 
     baseUrl: {
       type: String,

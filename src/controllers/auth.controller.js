@@ -11,6 +11,8 @@ exports.registerController = async(req, res)=>{
         })
     }
 
+   
+
     const duplicateEmail = await userModel.findOne({email})
 
     if (duplicateEmail){
@@ -39,7 +41,8 @@ exports.registerController = async(req, res)=>{
     })
 
     return res.status(201).json({
-        message:"User registered succesfully."
+        message:"User registered succesfully.",
+        user
     })
 
 }

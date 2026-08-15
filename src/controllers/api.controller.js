@@ -1,9 +1,11 @@
 const ApiModel = require("../models/api.model");
 const subscriptionModel = require("../models/subscription.model");
 const crypto = require("crypto");
+const uploadFile = require("../services/storage.service");
 
 exports.apiController = async (req, res) => {
-  const { title, baseurl, endpoints, ratelimit,  version } = req.body;
+  const { title, baseurl, endpoints, ratelimit, version } = req.body;
+  const file = req.files;
 
   if (!title || !baseurl || !endpoints || !version || !ratelimit) {
     return res.status(400).json({
@@ -30,11 +32,14 @@ exports.apiController = async (req, res) => {
       });
     }
 
+    const result = await uploadFile(file.buffer.toString("base64"))
+
     const api = await ApiModel.create({
       publisher: req.user.userId,
+      logo:result.url,
       title,
       baseUrl: baseurl,
-      ratelimit:ratelimit,
+      ratelimit: ratelimit,
       endpoints,
       version,
     });
@@ -85,29 +90,27 @@ exports.useApiKeyController = async (req, res) => {
       api: api._id,
     });
 
-    if (subscriberFound){
+    if (subscriberFound) {
       return res.status(409).json({
-        message:"You have already subcribed to this API"
-      })
+        message: "You have already subcribed to this API",
+      });
     }
 
-    // Generate api key 
+    // Generate api key
     const apiKey = crypto.randomBytes(32).toString("hex");
 
     const subscribeApi = await subscriptionModel.create({
       consumer: req.user.userId,
-      api:api._id,
+      api: api._id,
       apiKey,
-      ratelimit:api.ratelimit,
-      status:"ACTIVE"
-    })
-
-    res.status(200).json({
-      message:"API KEY generated successfully",
-      apiKey
+      ratelimit: api.ratelimit,
+      status: "ACTIVE",
     });
 
-
+    res.status(200).json({
+      message: "API KEY generated successfully",
+      apiKey,
+    });
   } catch (err) {
     return res
       .status(500)
