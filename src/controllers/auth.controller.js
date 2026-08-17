@@ -42,7 +42,7 @@ exports.registerController = async(req, res)=>{
 
     return res.status(201).json({
         message:"User registered succesfully.",
-        user
+        
     })
 
 }
@@ -57,7 +57,7 @@ exports.loginController = async(req, res)=>{
     }
 
     try{
-        const user = await userModel.findOne({email})
+        const user = await userModel.findOne({email}).select("+password")
 
     if (!user){
         return res.status(401).json({
@@ -81,8 +81,11 @@ exports.loginController = async(req, res)=>{
         maxAge: 3 * 24 * 60 * 60 * 1000               // 3 days, in ms — match your JWT expiry
     })
 
+   
+
     return res.status(200).json({
-        message:"Logedin succesfully."
+        message:"Loged-in succesfully.",
+        user
     })
 
     } catch (err){

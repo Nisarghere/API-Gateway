@@ -1,13 +1,12 @@
 const ApiModel = require("../models/api.model");
 const subscriptionModel = require("../models/subscription.model");
 const crypto = require("crypto");
-const uploadFile = require("../services/storage.service");
-
+ 
 exports.apiController = async (req, res) => {
-  const { title, baseurl, endpoints, ratelimit, version } = req.body;
+  const { title, baseurl, endpoints, ratelimit,category, version } = req.body;
   const file = req.files;
 
-  if (!title || !baseurl || !endpoints || !version || !ratelimit) {
+  if (!title || !baseurl || !endpoints || !version || !category || !ratelimit) {
     return res.status(400).json({
       message: "All fields are required.",
     });
@@ -24,6 +23,7 @@ exports.apiController = async (req, res) => {
       publisher: req.user.userId,
       title,
       version,
+      baseUrl:baseurl
     });
 
     if (isApiExist) {
@@ -38,6 +38,7 @@ exports.apiController = async (req, res) => {
       publisher: req.user.userId,
       logo:result.url,
       title,
+      category,
       baseUrl: baseurl,
       ratelimit: ratelimit,
       endpoints,
