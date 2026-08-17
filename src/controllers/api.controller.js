@@ -1,14 +1,23 @@
 const ApiModel = require("../models/api.model");
 const subscriptionModel = require("../models/subscription.model");
 const crypto = require("crypto");
- 
-exports.apiController = async (req, res) => {
-  const { title, baseurl, endpoints, ratelimit,category, version } = req.body;
-  const file = req.files;
 
-  if (!title || !baseurl || !endpoints || !version || !category || !ratelimit) {
+exports.apiController = async (req, res) => {
+  const { title, baseurl, endpoints, ratelimit,  category, version } = req.body;
+
+  const missingFields = [];
+
+  if (!title) missingFields.push("title");
+  if (!baseurl) missingFields.push("baseurl");
+  if (!endpoints) missingFields.push("endpoints");
+  // if (!ratelimit) missingFields.push("ratelimit");
+  if (!category) missingFields.push("category");
+  if (!version) missingFields.push("version");
+
+  if (missingFields.length > 0) {
     return res.status(400).json({
-      message: "All fields are required.",
+      message: "Missing required fields",
+      missingFields,
     });
   }
 
@@ -23,7 +32,7 @@ exports.apiController = async (req, res) => {
       publisher: req.user.userId,
       title,
       version,
-      baseUrl:baseurl
+      baseUrl: baseurl,
     });
 
     if (isApiExist) {
@@ -32,11 +41,10 @@ exports.apiController = async (req, res) => {
       });
     }
 
-    const result = await uploadFile(file.buffer.toString("base64"))
+    // const result = await uploadFile(file.buffer.toString("base64"));
 
     const api = await ApiModel.create({
       publisher: req.user.userId,
-      logo:result.url,
       title,
       category,
       baseUrl: baseurl,
