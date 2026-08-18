@@ -1,15 +1,19 @@
 const ApiModel = require("../models/api.model");
 const subscriptionModel = require("../models/subscription.model");
 const crypto = require("crypto");
+const uploadFile = require("../services/storage.service");
 
 exports.apiController = async (req, res) => {
-  const { title, baseurl, endpoints, ratelimit,  category, version } = req.body;
+  const { title, baseurl, endpoints, ratelimit, category, version } = req.body;
+
+  const logo = req.file;
+  const parsedEndpoints = JSON.parse(endpoints);
 
   const missingFields = [];
 
   if (!title) missingFields.push("title");
   if (!baseurl) missingFields.push("baseurl");
-  if (!endpoints) missingFields.push("endpoints");
+  if (!parsedEndpoints) missingFields.push("endpoints");
   // if (!ratelimit) missingFields.push("ratelimit");
   if (!category) missingFields.push("category");
   if (!version) missingFields.push("version");
@@ -21,7 +25,7 @@ exports.apiController = async (req, res) => {
     });
   }
 
-  if (!Array.isArray(endpoints) || endpoints.length === 0) {
+  if (!Array.isArray(parsedEndpoints) || parsedEndpoints.length === 0) {
     return res.status(400).json({
       message: "At least one endpoint is required.",
     });
@@ -41,15 +45,20 @@ exports.apiController = async (req, res) => {
       });
     }
 
-    // const result = await uploadFile(file.buffer.toString("base64"));
+    let logoUrl = null
+    if (logo) {
+      const result = await uploadFile(logo.buffer.toString("base64"));
+      logoUrl = result.url
+    }
 
     const api = await ApiModel.create({
+      logo: logoUrl,
       publisher: req.user.userId,
       title,
       category,
       baseUrl: baseurl,
       ratelimit: ratelimit,
-      endpoints,
+      endpoints: parsedEndpoints,
       version,
     });
 

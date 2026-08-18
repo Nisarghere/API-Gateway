@@ -9,7 +9,7 @@ const ApiSchema = new mongoose.Schema(
     },
     logo:{
       type:String,
-      required:false
+      default:null
     },
     title: {
       type: String,
