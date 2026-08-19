@@ -1,6 +1,6 @@
 const ApiModel = require("../models/api.model");
 const axios = require("axios");
-const {match} = require("path-to-regexp")
+const { match } = require("path-to-regexp");
 
 exports.consumerController = async (req, res) => {
   try {
@@ -8,16 +8,13 @@ exports.consumerController = async (req, res) => {
 
     const path = "/" + req.params.path.join("/");
 
-    const endpointExist = api.endpoints.find(
-      (endpoint) => { 
-        if(endpoint.method !== req.method) 
-          return false;
+    const endpointExist = api.endpoints.find((endpoint) => {
+      if (endpoint.method !== req.method) return false;
 
-        const matcher = match(endpoint.path)
+      const matcher = match(endpoint.path);
 
-        return matcher(path)
-      }
-    );
+      return matcher(path);
+    });
 
     if (!endpointExist) {
       return res.status(404).json({
@@ -25,7 +22,7 @@ exports.consumerController = async (req, res) => {
       });
     }
 
-    const providerUrl = `${api.baseUrl}${path}`
+    const providerUrl = `${api.baseUrl}${path}`;
 
     const response = await axios({
       method: req.method,
@@ -35,7 +32,6 @@ exports.consumerController = async (req, res) => {
     });
 
     return res.status(response.status).json(response.data);
-    
   } catch (err) {
     return res.status(500).json({
       message: "Error while forwarding request",

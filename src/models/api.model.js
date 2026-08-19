@@ -7,9 +7,9 @@ const ApiSchema = new mongoose.Schema(
       ref: "user",
       required: true,
     },
-    logo:{
-      type:String,
-      default:null
+    logo: {
+      type: String,
+      default: null,
     },
     title: {
       type: String,
@@ -19,10 +19,9 @@ const ApiSchema = new mongoose.Schema(
 
     description: {
       type: String,
-      required: false,
+      required: true,
       trim: true,
     },
-    
 
     baseUrl: {
       type: String,
@@ -43,15 +42,20 @@ const ApiSchema = new mongoose.Schema(
 
     endpoints: [
       {
-        path:{
-            type:String,
-            required:true
+        path: {
+          type: String,
+          required: true,
         },
-        method:{
-            type:String,
-            enum:["GET","POST","PUT","DELETE"],
-            required:true
-        }
+        method: {
+          type: String,
+          enum: ["GET", "POST", "PUT", "DELETE"],
+          required: true,
+        },
+        description: {
+          type: String,
+          required: false,
+          trim: true,
+        },
       },
     ],
 
@@ -60,20 +64,20 @@ const ApiSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    category:{
-      type:String,
-      required:true
+    category: {
+      type: String,
+      required: true,
     },
-    ratelimit:{
-      window:{
-        type:Number,
-        default:60
+    ratelimit: {
+      window: {
+        type: Number,
+        default: 60,
       },
-      requests:{
-        type:Number,
-        default:100
-      }
-    }
+      requests: {
+        type: Number,
+        default: 100,
+      },
+    },
   },
   {
     timestamps: true,

@@ -17,7 +17,6 @@ app.use(cookieParser());
 
 app.use("/auth", authRouter);
 app.use("/api", apiRouter);
-app.use("/apis", apiRouter);
-app.use("/api", counsumerRouter);
+ app.use("/api", counsumerRouter);
 
 module.exports = app;

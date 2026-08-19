@@ -4,7 +4,15 @@ const crypto = require("crypto");
 const uploadFile = require("../services/storage.service");
 
 exports.apiController = async (req, res) => {
-  const { title, baseurl, endpoints, ratelimit, category, version } = req.body;
+  const {
+    title,
+    description,
+    baseurl,
+    endpoints,
+    ratelimit,
+    category,
+    version,
+  } = req.body; 
 
   const logo = req.file;
   const parsedEndpoints = JSON.parse(endpoints);
@@ -12,9 +20,9 @@ exports.apiController = async (req, res) => {
   const missingFields = [];
 
   if (!title) missingFields.push("title");
+  if (!description) missingFields.push("description");
   if (!baseurl) missingFields.push("baseurl");
   if (!parsedEndpoints) missingFields.push("endpoints");
-  // if (!ratelimit) missingFields.push("ratelimit");
   if (!category) missingFields.push("category");
   if (!version) missingFields.push("version");
 
@@ -45,16 +53,17 @@ exports.apiController = async (req, res) => {
       });
     }
 
-    let logoUrl = null
+    let logoUrl = null;
     if (logo) {
       const result = await uploadFile(logo.buffer.toString("base64"));
-      logoUrl = result.url
+      logoUrl = result.url;
     }
 
     const api = await ApiModel.create({
       logo: logoUrl,
       publisher: req.user.userId,
       title,
+      description,
       category,
       baseUrl: baseurl,
       ratelimit: ratelimit,
@@ -114,8 +123,7 @@ exports.useApiKeyController = async (req, res) => {
       });
     }
 
-    // Generate api key
-    const apiKey = crypto.randomBytes(32).toString("hex");
+     const apiKey = crypto.randomBytes(32).toString("hex");
 
     const subscribeApi = await subscriptionModel.create({
       consumer: req.user.userId,
@@ -129,9 +137,34 @@ exports.useApiKeyController = async (req, res) => {
       message: "API KEY generated successfully",
       apiKey,
     });
+
   } catch (err) {
     return res
       .status(500)
       .json({ message: "something went wrong", err: err.message });
   }
 };
+
+exports.apiInfoController = async (req, res) => {
+  try {
+    const { apiId } = req.params
+
+    const api = await ApiModel.findById(apiId)
+
+    if (!api) {
+      return res.status(404).json({
+        message: "API doesn't exist!"
+      })
+    }
+
+    return res.status(200).json({
+      message: "API fetched successfully",
+      api
+    })
+  } catch (error) {
+    return res.status(500).json({
+      message: "Something went wrong",
+      error: error.message
+    })
+  }
+}

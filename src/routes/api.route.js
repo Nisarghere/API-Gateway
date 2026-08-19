@@ -1,6 +1,7 @@
 const { Router } = require("express");
-const { apiController, getApiController, useApiKeyController } = require("../controllers/api.controller");
+const { apiController, getApiController, useApiKeyController, apiInfoController } = require("../controllers/api.controller");
 const { authMiddleware } = require("../middlewares/auth.middleware");
+
 const multer = require("multer");
  
 
@@ -12,5 +13,6 @@ const upload = new multer({storage:multer.memoryStorage()})
 router.post('/publish',authMiddleware, upload.single("logo"),  apiController )
 router.get('/', authMiddleware, getApiController)
 router.post('/:apiId/subscribe', authMiddleware, useApiKeyController)
+router.get('/:apiId', authMiddleware, apiInfoController )
 
 module.exports = router
