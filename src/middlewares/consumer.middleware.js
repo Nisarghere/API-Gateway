@@ -19,20 +19,21 @@ exports.apiAuthenticateMW = async (req, res, next) => {
     }
 
     const findAPI = await ApiModel.findById(apiId);
-
+    
     if (!findAPI) {
       return res.status(404).json({
         message: "API not found",
       });
     }
 
+    const hashedKey =  subscriptionModel.hashApiKey(apiKey)
+
     const subscription = await subscriptionModel.findOne({
-      apiKey,
-      api: apiId,
-      consumer: req.user.userId,
+      apiKey:hashedKey,
+      status:"ACTIVE"
     });
 
-    if (!subscription || subscription.status !== "ACTIVE") {
+    if (!subscription || subscription.status === "REVOKED") {
       return res.status(403).json({
         message: "Invalid or inactive API key",
       });

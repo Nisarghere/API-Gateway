@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 
 const subscriptionSchema = new mongoose.Schema(
   {
@@ -24,7 +24,7 @@ const subscriptionSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["ACTIVE", "INACTIVE"],
+      enum: ["ACTIVE", "REVOKED"],
       required: true,
       default: "ACTIVE",
     },
@@ -32,13 +32,13 @@ const subscriptionSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-// subscriptionSchema.pre("save", async function (next) {
-//   if (!this.isModified("apiKey")) return;
+subscriptionSchema.statics.hashApiKey  = function (apiKey){
+    return crypto.createHash("sha256").update(apiKey).digest("hex")
 
-//   const hashKey = await bcrypt.hash(this.apiKey, 10);
-//   this.apiKey = hashKey;
-// });
+}
+
+  
 
 const subscriptionModel = mongoose.model("subscription", subscriptionSchema);
 
-module.exports = subscriptionModel;
+module.exports = {subscriptionModel, hashedKey };

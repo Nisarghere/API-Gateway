@@ -12,7 +12,7 @@ exports.apiController = async (req, res) => {
     ratelimit,
     category,
     version,
-  } = req.body; 
+  } = req.body;
 
   const logo = req.file;
   const parsedEndpoints = JSON.parse(endpoints);
@@ -123,12 +123,13 @@ exports.useApiKeyController = async (req, res) => {
       });
     }
 
-     const apiKey = crypto.randomBytes(32).toString("hex");
+    const apiKey = crypto.randomBytes(32).toString("hex");
+    const hashedApiKey = subscriptionModel.hashApiKey(apiKey);
 
     const subscribeApi = await subscriptionModel.create({
       consumer: req.user.userId,
       api: api._id,
-      apiKey,
+      apiKey: hashedApiKey,
       ratelimit: api.ratelimit,
       status: "ACTIVE",
     });
@@ -137,7 +138,6 @@ exports.useApiKeyController = async (req, res) => {
       message: "API KEY generated successfully",
       apiKey,
     });
-
   } catch (err) {
     return res
       .status(500)
@@ -147,24 +147,44 @@ exports.useApiKeyController = async (req, res) => {
 
 exports.apiInfoController = async (req, res) => {
   try {
-    const { apiId } = req.params
+    const { apiId } = req.params;
 
-    const api = await ApiModel.findById(apiId)
+    const api = await ApiModel.findById(apiId);
 
     if (!api) {
       return res.status(404).json({
-        message: "API doesn't exist!"
-      })
+        message: "API doesn't exist!",
+      });
     }
 
     return res.status(200).json({
       message: "API fetched successfully",
-      api
-    })
+      api,
+    });
   } catch (error) {
     return res.status(500).json({
       message: "Something went wrong",
-      error: error.message
+      error: error.message,
+    });
+  }
+};
+
+
+exports.rotateApiController = async(req, res)=>{
+
+  const subId = req.subscription
+  const api = req.api
+  
+  const subscription = await subscriptionModel.findOne({_id:subId._id})
+
+  if (!subscription){
+    res.status(400).json({
+      message:"Subscription not found"
     })
   }
+
+  
+
+
+
 }
