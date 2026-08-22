@@ -1,49 +1,48 @@
 const ApiModel = require("../models/api.model");
 const subscriptionModel = require("../models/subscription.model");
 
-exports.apiAuthenticateMW = async (req, res, next) => {
+exports.rotateMiddleWare = async (req, res, next) => {
   try {
     const apiId = req.params.apiId;
-    const apiKey = req.header("x-api-key");
+    const subId = req.params.subId;
 
     if (!apiId) {
       return res.status(400).json({
         message: "API ID is required",
       });
     }
-
-    if (!apiKey) {
+    if (!subId) {
       return res.status(400).json({
-        message: "API key is required",
+        message: "Subscription Id is required",
       });
     }
 
-    const findAPI = await ApiModel.findById(apiId);
+    const api = await ApiModel.findById(apiId);
 
-    if (!findAPI) {
+    if (!api) {
       return res.status(404).json({
         message: "API not found",
       });
     }
 
-    const hashedKey = subscriptionModel.hashApiKey(apiKey);
-
     const subscription = await subscriptionModel.findOne({
-      apiKey: hashedKey,
-      consumer: req.user.userId,
+      _id: subId,
       api: apiId,
-      status: "ACTIVE",
+      consumer: req.user.userId,
     });
-
     if (!subscription) {
-      return res.status(403).json({
-        message: "Invalid or inactive API key",
+      return res.status(404).json({
+        message: "Subscription not found",
       });
     }
 
+    if (subscription.status === "REVOKED") {
+      return res.status(404).json({
+        message: "Subscription has been revoked",
+      });
+    }
     req.subscription = subscription;
-    req.api = findAPI;
-
+    req.api = api;
     next();
   } catch (error) {
     next(error);

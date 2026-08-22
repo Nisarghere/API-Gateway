@@ -1,6 +1,6 @@
  const userModel = require("../models/user.model")
 const jwt = require("jsonwebtoken")
-
+ 
 
 exports.registerController = async(req, res)=>{
     const {name, email, password} = req.body

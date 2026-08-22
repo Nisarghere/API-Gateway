@@ -18,9 +18,13 @@ const subscriptionSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-    ratelimit:{
-      window:Number,
-      requests:Number
+    apiKeyPreview:{
+      type:String,
+      trim:true
+    },
+    ratelimit: {
+      window: Number,
+      requests: Number,
     },
     status: {
       type: String,
@@ -28,17 +32,22 @@ const subscriptionSchema = new mongoose.Schema(
       required: true,
       default: "ACTIVE",
     },
+    rotatedAt: {
+      type: Date,
+      default: null,
+    },
+    revokedAt: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true },
 );
 
-subscriptionSchema.statics.hashApiKey  = function (apiKey){
-    return crypto.createHash("sha256").update(apiKey).digest("hex")
-
-}
-
-  
+subscriptionSchema.statics.hashApiKey = function (apiKey) {
+  return crypto.createHash("sha256").update(apiKey).digest("hex");
+};
 
 const subscriptionModel = mongoose.model("subscription", subscriptionSchema);
 
-module.exports = {subscriptionModel, hashedKey };
+module.exports = subscriptionModel;
