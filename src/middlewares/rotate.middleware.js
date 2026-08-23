@@ -36,11 +36,11 @@ exports.rotateMiddleWare = async (req, res, next) => {
       });
     }
 
-    if (subscription.status === "REVOKED") {
-      return res.status(404).json({
-        message: "Subscription has been revoked",
-      });
-    }
+    // if (subscription.status === "REVOKED") {
+    //   return res.status(404).json({
+    //     message: "Subscription has been revoked",
+    //   });
+    // }
     req.subscription = subscription;
     req.api = api;
     next();

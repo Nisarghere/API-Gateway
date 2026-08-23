@@ -130,7 +130,7 @@ exports.useApiKeyController = async (req, res) => {
       consumer: req.user.userId,
       api: api._id,
       apiKey: hashedApiKey,
-      apiKeyPreview:apiKey.slice(0, 8),
+      apiKeyPreview: apiKey.slice(0, 8),
       ratelimit: api.ratelimit,
       status: "ACTIVE",
     });
@@ -180,7 +180,8 @@ exports.rotateApiController = async (req, res, next) => {
     const newHashedKey = subscriptionModel.hashApiKey(newApiKey);
 
     subscription.apiKey = newHashedKey;
-    subscription.status = "ACTIVE"
+    subscription.apiKeyPreview = newApiKey.slice(0, 8);
+    subscription.status = "ACTIVE";
     subscription.rotatedAt = new Date();
 
     await subscription.save();
@@ -188,6 +189,7 @@ exports.rotateApiController = async (req, res, next) => {
     res.status(200).json({
       message: "API key rotated successfully",
       apiKey: newApiKey,
+      apiKeyPreview: subscription.apiKeyPreview,
     });
   } catch (error) {
     next(error);
@@ -205,6 +207,32 @@ exports.revokeApiController = async (req, res, next) => {
 
     res.status(200).json({
       message: "API key revoked successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getApiPreviewController = async (req, res, next) => {
+  try {
+    const userid = req.user.userId;
+    const apiId = req.params.apiId;
+
+    const subscription = await subscriptionModel.findOne({
+      api: apiId,
+      consumer: userid,
+    });
+
+    if (!subscription) {
+      return res.status(404).json({
+        message: "You haven't subscribed to this api.",
+      });
+    }
+
+    res.status(200).json({
+      apiKeyPreview: subscription.apiKeyPreview,
+      subscriptionId: subscription._id,
+       status: subscription.status,
     });
   } catch (error) {
     next(error);
