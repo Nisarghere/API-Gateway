@@ -1,9 +1,24 @@
-require('dotenv').config()
- const app = require("./src/app");
-const connectDb = require('./src/db/db');
+require("dotenv").config();
 
-connectDb()
- 
-app.listen(5000, ()=>{
-    console.log('app is listening on port 5000...')
-})
+const express = require("express");
+const app = require("./src/app");
+const connectDb = require("./src/db/db");
+
+const { apiReference } = require("@scalar/express-api-reference");
+
+connectDb();
+
+app.use(express.static(__dirname));
+
+app.use(
+  "/docs",
+  apiReference({
+    spec: {
+      url: "/openapi.yaml",
+    },
+  }),
+);
+
+app.listen(5000, () => {
+  console.log("app is listening on port 5000...");
+});

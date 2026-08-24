@@ -17,14 +17,7 @@ exports.rotateMiddleWare = async (req, res, next) => {
       });
     }
 
-    const api = await ApiModel.findById(apiId);
-
-    if (!api) {
-      return res.status(404).json({
-        message: "API not found",
-      });
-    }
-
+    
     const subscription = await subscriptionModel.findOne({
       _id: subId,
       api: apiId,

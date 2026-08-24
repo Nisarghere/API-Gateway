@@ -1,0 +1,17 @@
+openapi: 3.0.3
+
+info:
+  title: My API Gateway
+  version: 1.0.0
+  description: API Gateway APIs
+
+servers:
+  - url: http://localhost:5000
+
+paths:
+  /api/weather:
+    get:
+      summary: Get weather
+      responses:
+        "200":
+          description: Successful response
