@@ -10,11 +10,9 @@ connectDb();
 
 app.use(express.static(__dirname));
 
-app.use(
-  "/docs",
-  apiReference({
-    spec: {
-      url: "/openapi.yaml",
+app.use("/docs",apiReference({
+  spec: {
+      url: "/api/6a835760362c8ed3b3f35f1e/openapi",
     },
   }),
 );

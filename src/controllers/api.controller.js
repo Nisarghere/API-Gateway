@@ -1,7 +1,7 @@
 const ApiModel = require("../models/api.model");
 const subscriptionModel = require("../models/subscription.model");
 const crypto = require("crypto");
-const uploadFile = require("../services/storage.service");
+const { uploadFile, generateOpenApi } = require("../services/storage.service");
 
 exports.apiController = async (req, res) => {
   const {
@@ -232,9 +232,25 @@ exports.getApiPreviewController = async (req, res, next) => {
     res.status(200).json({
       apiKeyPreview: subscription.apiKeyPreview,
       subscriptionId: subscription._id,
-       status: subscription.status,
+      status: subscription.status,
     });
   } catch (error) {
     next(error);
+  }
+};
+
+exports.openApiController = async (req, res) => {
+  try {
+    const api = await ApiModel.findById(req.params.apiId);
+
+    if (!api) {
+      return res.status(404).json({
+        message: "API not found",
+      });
+    }
+    const openApiDocument = generateOpenApi(api);
+    res.json(openApiDocument);
+  } catch (error) {
+    res.status(500).json({ message: "Something went wrong"});
   }
 };

@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { apiController, getApiController, useApiKeyController, apiInfoController, rotateApiController, revokeApiController, getApiPreviewController } = require("../controllers/api.controller");
+const { apiController, getApiController, useApiKeyController, apiInfoController, rotateApiController, revokeApiController, getApiPreviewController, openApiController } = require("../controllers/api.controller");
 const { authMiddleware } = require("../middlewares/auth.middleware");
 const { apiAuthenticateMW } = require("../middlewares/consumer.middleware");
 
@@ -20,4 +20,5 @@ router.get('/:apiId', authMiddleware, apiInfoController )
 router.patch('/:apiId/:subId/rotate', authMiddleware,rotateMiddleWare,rateLimiterMW, rotateApiController )
 router.patch('/:apiId/:subId/revoke', authMiddleware, rotateMiddleWare, rateLimiterMW, revokeApiController)
 router.get('/:apiId/apiPreview', authMiddleware, getApiPreviewController)
+router.get('/:apiId/openapi', authMiddleware, openApiController)
 module.exports = router

@@ -1,17 +1,30 @@
 const ImageKit = require("@imagekit/nodejs");
 
 const imagekitClient = new ImageKit({
-    privateKey: process.env.IMAGEKIT_PRIVATE_KEY
-})
+  privateKey: process.env.IMAGEKIT_PRIVATE_KEY,
+});
 
-async function uploadFile(file){
-    const result = await imagekitClient.files.upload({
-        file,
-        fileName: "logo_" + Date.now(),
-        folder:"Smash-Api/logo"
+exports.uploadFile = async (file) => {
+  const result = await imagekitClient.files.upload({
+    file,
+    fileName: "logo_" + Date.now(),
+    folder: "Smash-Api/logo",
+  });
+  return result;
+};
 
-    })
-    return result
-}
-
-module.exports = uploadFile
+exports.generateOpenApi = (api) => {
+    console.log(api.baseUrl)
+  const openApiDocument = {
+    openapi: "3.0.3",
+    info:{
+      title:api.title,
+      version:api.version
+    },
+    servers:[{
+      url:api.baseUrl
+    }],
+    paths:{}
+  };
+  return openApiDocument
+  }
