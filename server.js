@@ -10,12 +10,15 @@ connectDb();
 
 app.use(express.static(__dirname));
 
-app.use("/docs",apiReference({
-  spec: {
-      url: "/api/6a835760362c8ed3b3f35f1e/openapi",
-    },
-  }),
-);
+app.get('/docs/:apiId', (req, res, next)=>{
+  const apiId = req.params.apiId
+
+  apiReference({
+    spec:{
+      url:`/api/${apiId}/openapi`
+    }
+  })(req, res, next);
+})
 
 app.listen(5000, () => {
   console.log("app is listening on port 5000...");

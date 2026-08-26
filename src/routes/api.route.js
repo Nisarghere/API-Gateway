@@ -20,5 +20,5 @@ router.get('/:apiId', authMiddleware, apiInfoController )
 router.patch('/:apiId/:subId/rotate', authMiddleware,rotateMiddleWare,rateLimiterMW, rotateApiController )
 router.patch('/:apiId/:subId/revoke', authMiddleware, rotateMiddleWare, rateLimiterMW, revokeApiController)
 router.get('/:apiId/apiPreview', authMiddleware, getApiPreviewController)
-router.get('/:apiId/openapi', authMiddleware, openApiController)
+router.get('/openapi/:apiId', authMiddleware, openApiController)
 module.exports = router

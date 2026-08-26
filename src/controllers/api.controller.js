@@ -249,6 +249,7 @@ exports.openApiController = async (req, res) => {
       });
     }
     const openApiDocument = generateOpenApi(api);
+    console.log(openApiDocument)
     res.json(openApiDocument);
   } catch (error) {
     res.status(500).json({ message: "Something went wrong"});
