@@ -241,6 +241,8 @@ exports.getApiPreviewController = async (req, res, next) => {
 
 exports.openApiController = async (req, res) => {
   try {
+    console.log("OPENAPI CONTROLLER HIT");
+
     const api = await ApiModel.findById(req.params.apiId);
 
     if (!api) {
@@ -248,10 +250,17 @@ exports.openApiController = async (req, res) => {
         message: "API not found",
       });
     }
+
     const openApiDocument = generateOpenApi(api);
-    console.log(openApiDocument)
+
+    console.log(openApiDocument);
+
     res.json(openApiDocument);
   } catch (error) {
-    res.status(500).json({ message: "Something went wrong"});
+    console.error(error);
+
+    res.status(500).json({
+      message: "Something went wrong",
+    });
   }
 };

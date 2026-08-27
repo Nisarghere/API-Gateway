@@ -15,14 +15,14 @@ exports.uploadFile = async (file) => {
 
 exports.generateOpenApi = (api) => {
   const paths = {};
-
+  
   api.endpoints.forEach((endpoint) => {
     const path = "/" + endpoint.path.replace(/:([^/]+)/g, "{$1}");
 
     if (!paths[path]) paths[path] = {};
 
     paths[path][endpoint.method.toLowerCase()] = {
-      summary: endpoint.description,
+      summary: "endpoint.description",
     };
   });
 
