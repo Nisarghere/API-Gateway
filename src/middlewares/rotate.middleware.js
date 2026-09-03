@@ -22,20 +22,16 @@ exports.rotateMiddleWare = async (req, res, next) => {
       _id: subId,
       api: apiId,
       consumer: req.user.userId,
-    });
+    }); 
     if (!subscription) {
       return res.status(404).json({
         message: "Subscription not found",
       });
     }
 
-    // if (subscription.status === "REVOKED") {
-    //   return res.status(404).json({
-    //     message: "Subscription has been revoked",
-    //   });
-    // }
+   
     req.subscription = subscription;
-    req.api = api;
+    req.api = apiId;
     next();
   } catch (error) {
     next(error);
