@@ -22,7 +22,7 @@ exports.generateOpenApi = (api) => {
     if (!paths[path]) paths[path] = {};
 
     paths[path][endpoint.method.toLowerCase()] = {
-      summary: "endpoint.description",
+      summary: `${endpoint.description}`
     };
   });
 

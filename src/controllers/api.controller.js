@@ -91,6 +91,27 @@ exports.getApiController = async (req, res) => {
   });
 };
 
+exports.getStudioApisController = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    const api = await ApiModel.find({ publisher: userId }).sort({
+      createdAt: -1,
+    });
+
+    res.status(200).json({
+      message: "APIs by the publisher",
+      api,
+    });
+  } catch (error) {
+    console.error("Error fetching studio APIs:", error);
+    res.status(500).json({
+      message: "Failed to fetch APIs",
+      error: error.message,
+    });
+  }
+};
+
 exports.useApiKeyController = async (req, res) => {
   const apiId = req.params.apiId;
   console.log(apiId);
