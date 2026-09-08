@@ -1,5 +1,5 @@
 const { Router } = require("express");
-const { apiController, getApiController, useApiKeyController, apiInfoController, rotateApiController, revokeApiController, getApiPreviewController, openApiController, getStudioApisController } = require("../controllers/api.controller");
+const { apiController, getApiController, useApiKeyController, apiInfoController, rotateApiController, revokeApiController, getApiPreviewController, openApiController, getStudioApisController, UpdateApiController } = require("../controllers/api.controller");
 const { authMiddleware } = require("../middlewares/auth.middleware");
 const { apiAuthenticateMW } = require("../middlewares/consumer.middleware");
 
@@ -17,6 +17,7 @@ router.post('/publish', authMiddleware, upload.single("logo"), apiController)
 router.get('/', authMiddleware, getApiController)
 router.get('/studio', authMiddleware, getStudioApisController)   // moved up, before /:apiId
 router.get('/openapi/:apiId', authMiddleware, openApiController)
+router.patch('/publish/update/:apiId',upload.single("logo"), authMiddleware, UpdateApiController)
 
 router.post('/:apiId/subscribe', authMiddleware, useApiKeyController)
 router.get('/:apiId', authMiddleware, apiInfoController )

@@ -99,6 +99,12 @@ exports.getStudioApisController = async (req, res) => {
       createdAt: -1,
     });
 
+    if (!api) {
+      return res.status(404).json({
+        message: "API doesn't exist!",
+      });
+    }
+
     res.status(200).json({
       message: "APIs by the publisher",
       api,
@@ -274,8 +280,6 @@ exports.openApiController = async (req, res) => {
 
     const openApiDocument = generateOpenApi(api);
 
-    console.log(openApiDocument);
-
     res.json(openApiDocument);
   } catch (error) {
     console.error(error);
@@ -283,5 +287,80 @@ exports.openApiController = async (req, res) => {
     res.status(500).json({
       message: "Something went wrong",
     });
+  }
+};
+
+exports.UpdateApiController = async (req, res) => {
+  try {
+    const userid = req.user.userId;
+    const {apiId} = req.params;
+
+    const {
+      title,
+      description,
+      baseurl,
+      endpoints,
+      ratelimit,
+      category,
+      version,
+    } = req.body;
+
+    const logo = req.file;
+    const parsedEndpoints = JSON.parse(endpoints);
+
+    const missingFields = [];
+
+    if (!title) missingFields.push("title");
+    if (!description) missingFields.push("description");
+    if (!baseurl) missingFields.push("baseurl");
+    if (!parsedEndpoints) missingFields.push("endpoints");
+    if (!category) missingFields.push("category");
+    if (!version) missingFields.push("version");
+
+    if (missingFields.length > 0) {
+      return res.status(400).json({
+        message: "Missing required fields",
+        missingFields,
+      });
+    }
+
+    if (!Array.isArray(parsedEndpoints) || parsedEndpoints.length === 0) {
+      return res.status(400).json({
+        message: "At least one endpoint is required.",
+      });
+    }
+
+    const api = await ApiModel.findById(apiId);
+
+    if (!api) {
+      return res.status(404).json({ message: "API doesn't exist!" });
+    }
+
+    if (api.publisher.toString() !== userid) {
+      return res
+        .status(403)
+        .json({ message: "Not authorized to edit this API" });
+    }
+
+    api.title = title;
+    api.description = description;
+    api.baseUrl = baseurl;
+    api.endpoints = parsedEndpoints;
+    api.version = version;
+    api.category = category;
+    let logoUrl = null;
+    if (logo) {
+      const result = await uploadFile(logo.buffer.toString("base64"));
+      logoUrl = result.url;
+    }
+    api.logo = logoUrl;
+    await api.save();
+
+        res.status(200).json({ message: "API updated successfully", api });
+        
+
+  } catch (error) {
+    console.error("Error updating API:", error);
+    res.status(500).json({ message: "Failed to update API" });
   }
 };
