@@ -352,8 +352,8 @@ exports.UpdateApiController = async (req, res) => {
     if (logo) {
       const result = await uploadFile(logo.buffer.toString("base64"));
       logoUrl = result.url;
+      api.logo = logoUrl;
     }
-    api.logo = logoUrl;
     await api.save();
 
         res.status(200).json({ message: "API updated successfully", api });

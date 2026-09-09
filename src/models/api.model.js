@@ -48,7 +48,7 @@ const ApiSchema = new mongoose.Schema(
         },
         method: {
           type: String,
-          enum: ["GET", "POST", "PUT", "DELETE"],
+          enum: ["GET", "POST", "PATCH", "DELETE"],
           required: true,
         },
         description: {
