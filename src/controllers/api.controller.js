@@ -13,7 +13,6 @@ exports.apiController = async (req, res) => {
     category,
     version,
   } = req.body;
-
   const logo = req.file;
   const parsedEndpoints = JSON.parse(endpoints);
 
@@ -49,6 +48,7 @@ exports.apiController = async (req, res) => {
 
     if (isApiExist) {
       return res.status(409).json({
+        success: false,
         message: "API already exist",
       });
     }
@@ -72,6 +72,7 @@ exports.apiController = async (req, res) => {
     });
 
     return res.status(201).json({
+      success: true,
       message: "API created successfully",
       api,
     });
@@ -84,7 +85,9 @@ exports.apiController = async (req, res) => {
 
 exports.getApiController = async (req, res) => {
   const apis = await ApiModel.find();
-
+  console.log(apis);
+  console.log("apis hit");
+  console.log(req.user);
   res.status(200).json({
     message: "All the Apis",
     apis,
@@ -293,8 +296,7 @@ exports.openApiController = async (req, res) => {
 exports.UpdateApiController = async (req, res) => {
   try {
     const userid = req.user.userId;
-    const {apiId} = req.params;
-
+    const { apiId } = req.params;
     const {
       title,
       description,
@@ -304,7 +306,6 @@ exports.UpdateApiController = async (req, res) => {
       category,
       version,
     } = req.body;
-
     const logo = req.file;
     const parsedEndpoints = JSON.parse(endpoints);
 
@@ -336,10 +337,24 @@ exports.UpdateApiController = async (req, res) => {
       return res.status(404).json({ message: "API doesn't exist!" });
     }
 
+    const isApiExist = await ApiModel.findOne({
+      publisher: userid,
+      title,
+      version,
+      baseUrl: baseurl,
+    });
+
+    if (isApiExist) {
+      return res.status(409).json({
+        success: false,
+        message: "This API already exist",
+      });
+    }
+
     if (api.publisher.toString() !== userid) {
       return res
         .status(403)
-        .json({ message: "Not authorized to edit this API" });
+        .json({ success: false, message: "Not authorized to edit this API" });
     }
 
     api.title = title;
@@ -348,19 +363,49 @@ exports.UpdateApiController = async (req, res) => {
     api.endpoints = parsedEndpoints;
     api.version = version;
     api.category = category;
-    let logoUrl = null;
+
+    // let logoUrl = null;
+
     if (logo) {
       const result = await uploadFile(logo.buffer.toString("base64"));
-      logoUrl = result.url;
+      const logoUrl = result.url;
       api.logo = logoUrl;
     }
+
     await api.save();
 
-        res.status(200).json({ message: "API updated successfully", api });
-        
-
+    res.status(200).json({
+      success: true,
+      message: "API updated successfully",
+      api,
+    });
   } catch (error) {
     console.error("Error updating API:", error);
     res.status(500).json({ message: "Failed to update API" });
   }
+};
+
+exports.DeleteApiController = async (req, res) => {
+  const apiId = req.params.apiId;
+  const userid = req.user.userId;
+
+  const api = await ApiModel.findOne({
+    _id: apiId,
+    publisher: userid,
+  });
+
+  if (!api) {
+    return res.status(404).json({
+      success: false,
+      message: "API not found",
+    });
+  }
+  await ApiModel.findOneAndDelete({
+    _id: apiId,
+    publisher: userid,
+  });
+  return res.status(200).json({
+    success: true,
+    message: "API deleted successfully",
+  });
 };
