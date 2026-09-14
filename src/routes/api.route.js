@@ -17,11 +17,11 @@ router.post('/publish', authMiddleware, upload.single("logo"), apiController)
 router.get('/', getApiController)
 router.get('/studio', authMiddleware, getStudioApisController)   // moved up, before /:apiId
 router.delete('/studio/delete/:apiId', authMiddleware, DeleteApiController)
-router.get('/openapi/:apiId', authMiddleware, openApiController)
+router.get('/openapi/:apiId', openApiController)
 router.patch('/publish/update/:apiId', authMiddleware ,upload.single("logo"), UpdateApiController)
 
 router.post('/:apiId/subscribe', authMiddleware, useApiKeyController)
-router.get('/:apiId', authMiddleware, apiInfoController )
+router.get('/:apiId', apiInfoController )
 router.patch('/:apiId/:subId/rotate', authMiddleware, rotateMiddleWare, rateLimiterMW, rotateApiController )
 router.patch('/:apiId/:subId/revoke', authMiddleware, rotateMiddleWare, rateLimiterMW, revokeApiController)
 router.get('/:apiId/apiPreview',authMiddleware, getApiPreviewController)

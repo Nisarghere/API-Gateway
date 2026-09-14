@@ -166,6 +166,7 @@ exports.useApiKeyController = async (req, res) => {
     });
 
     res.status(200).json({
+      success:true,
       message: "API KEY generated successfully",
       apiKey,
       id: subscribeApi._id,
@@ -400,12 +401,12 @@ exports.DeleteApiController = async (req, res) => {
       message: "API not found",
     });
   }
-  await ApiModel.findOneAndDelete({
-    _id: apiId,
-    publisher: userid,
-  });
+await ApiModel.findOneAndDelete({
+  _id: apiId,
+  publisher: userid,
+});  
   return res.status(200).json({
-    success: true,
-    message: "API deleted successfully",
-  });
+  success: true,
+  message: "API deleted successfully"
+  })
 };
