@@ -33,6 +33,10 @@ exports.consumerController = async (req, res) => {
 
     return res.status(response.status).json(response.data);
   } catch (err) {
+    console.log(err.message);
+    console.log(err.response?.data);
+    console.log(err.config?.url);
+    
     return res.status(500).json({
       message: "Error while forwarding request",
     });

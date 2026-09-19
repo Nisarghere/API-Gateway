@@ -96,7 +96,7 @@ exports.LogOutGetCOntroller = async (req, res) => {
 
   res.status(200).json({
     success: true,
-    message: "You have been logged out successfully",
+    message: "User exist",
   });
 };
 
@@ -104,11 +104,11 @@ exports.LogOutGetCOntroller = async (req, res) => {
 exports.LogOutController = async (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
-    sameSite: "strict",
+    sameSite: "strict", 
   });
 
   return res.status(200).json({
     success: true,
     message: "Logged out successfully",
   });
-};
+}

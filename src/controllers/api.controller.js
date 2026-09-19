@@ -15,6 +15,7 @@ exports.apiController = async (req, res) => {
   } = req.body;
   const logo = req.file;
   const parsedEndpoints = JSON.parse(endpoints);
+  const rateLimit = JSON.parse(ratelimit);
 
   const missingFields = [];
 
@@ -35,6 +36,16 @@ exports.apiController = async (req, res) => {
   if (!Array.isArray(parsedEndpoints) || parsedEndpoints.length === 0) {
     return res.status(400).json({
       message: "At least one endpoint is required.",
+    });
+  }
+
+  const window = Number(rateLimit?.window);
+  const requests = Number(rateLimit?.requests);
+
+  if (!window || !requests || window <= 0 || requests <= 0) {
+    return res.status(400).json({
+      success: false,
+      message: "Rate limit window and requests must be greater than 0",
     });
   }
 
@@ -66,7 +77,7 @@ exports.apiController = async (req, res) => {
       description,
       category,
       baseUrl: baseurl,
-      ratelimit: ratelimit,
+      ratelimit: rateLimit,
       endpoints: parsedEndpoints,
       version,
     });
@@ -166,7 +177,7 @@ exports.useApiKeyController = async (req, res) => {
     });
 
     res.status(200).json({
-      success:true,
+      success: true,
       message: "API KEY generated successfully",
       apiKey,
       id: subscribeApi._id,
@@ -309,6 +320,7 @@ exports.UpdateApiController = async (req, res) => {
     } = req.body;
     const logo = req.file;
     const parsedEndpoints = JSON.parse(endpoints);
+    const rateLimit = JSON.parse(ratelimit);
 
     const missingFields = [];
 
@@ -340,6 +352,8 @@ exports.UpdateApiController = async (req, res) => {
 
     const isApiExist = await ApiModel.findOne({
       publisher: userid,
+      rateLimit,
+      parsedEndpoints,
       title,
       version,
       baseUrl: baseurl,
@@ -349,6 +363,16 @@ exports.UpdateApiController = async (req, res) => {
       return res.status(409).json({
         success: false,
         message: "This API already exist",
+      });
+    }
+
+    const window = Number(rateLimit?.window);
+    const requests = Number(rateLimit?.requests);
+
+    if (!window || !requests || window <= 0 || requests <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Rate limit window and requests must be greater than 0",
       });
     }
 
@@ -364,6 +388,8 @@ exports.UpdateApiController = async (req, res) => {
     api.endpoints = parsedEndpoints;
     api.version = version;
     api.category = category;
+    api.ratelimit = rateLimit;
+    
 
     // let logoUrl = null;
 
@@ -401,12 +427,12 @@ exports.DeleteApiController = async (req, res) => {
       message: "API not found",
     });
   }
-await ApiModel.findOneAndDelete({
-  _id: apiId,
-  publisher: userid,
-});  
+  await ApiModel.findOneAndDelete({
+    _id: apiId,
+    publisher: userid,
+  });
   return res.status(200).json({
-  success: true,
-  message: "API deleted successfully"
-  })
+    success: true,
+    message: "API deleted successfully",
+  });
 };
