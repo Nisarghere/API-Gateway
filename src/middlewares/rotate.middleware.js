@@ -11,6 +11,7 @@ exports.rotateMiddleWare = async (req, res, next) => {
         message: "API ID is required",
       });
     }
+    
     if (!subId) {
       return res.status(400).json({
         message: "Subscription Id is required",

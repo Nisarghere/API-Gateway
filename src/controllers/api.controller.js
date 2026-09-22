@@ -239,6 +239,7 @@ exports.rotateApiController = async (req, res, next) => {
     await subscription.save();
 
     res.status(200).json({
+      success:true,
       message: "API key rotated successfully",
       apiKey: newApiKey,
       apiKeyPreview: subscription.apiKeyPreview,
@@ -258,6 +259,7 @@ exports.revokeApiController = async (req, res, next) => {
     await subscription.save();
 
     res.status(200).json({
+      success:true,
       message: "API key revoked successfully",
     });
   } catch (error) {
