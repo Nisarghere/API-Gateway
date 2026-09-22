@@ -29,9 +29,10 @@ exports.registerController = async (req, res) => {
   });
 
   res.cookie("token", token, {
-    httpOnly: true, // JS on the frontend can't read it — mitigates XSS
-    sameSite: "strict", // blocks cross-site sending — CSRF protection
-    maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days, in ms — match your JWT expiry
+    httpOnly: true,
+    sameSite: "none", // ✅ allows cross-origin sending
+    secure: true, // ✅ required when sameSite is "none" — cookie only sent over HTTPS
+    maxAge: 3 * 24 * 60 * 60 * 1000,
   });
 
   return res.status(201).json({
@@ -70,9 +71,10 @@ exports.loginController = async (req, res) => {
     });
 
     res.cookie("token", token, {
-      httpOnly: true, // JS on the frontend can't read it — mitigates XSS
-      sameSite: "strict", // blocks cross-site sending — CSRF protection
-      maxAge: 3 * 24 * 60 * 60 * 1000, // 3 days, in ms — match your JWT expiry
+      httpOnly: true,
+      sameSite: "none", // ✅ allows cross-origin sending
+      secure: true, // ✅ required when sameSite is "none" — cookie only sent over HTTPS
+      maxAge: 3 * 24 * 60 * 60 * 1000,
     });
 
     return res.status(200).json({
@@ -100,15 +102,14 @@ exports.LogOutGetCOntroller = async (req, res) => {
   });
 };
 
-
 exports.LogOutController = async (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
-    sameSite: "strict", 
+    sameSite: "strict",
   });
 
   return res.status(200).json({
     success: true,
     message: "Logged out successfully",
   });
-}
+};
