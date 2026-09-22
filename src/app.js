@@ -8,7 +8,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "https://smash-api-git-main-nisarghere1.vercel.app",
+    origin: "https://smash-api-gateway.vercel.app",
     credentials: true,
   }),
 );
