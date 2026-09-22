@@ -36,6 +36,7 @@ exports.registerController = async (req, res) => {
   });
 
   return res.status(201).json({
+    success:true,
     message: "User registered succesfully.",
   });
 };
@@ -78,6 +79,7 @@ exports.loginController = async (req, res) => {
     });
 
     return res.status(200).json({
+      success: true,
       message: "Loged-in succesfully.",
       user,
     });

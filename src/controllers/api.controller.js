@@ -95,14 +95,22 @@ exports.apiController = async (req, res) => {
 };
 
 exports.getApiController = async (req, res) => {
-  const apis = await ApiModel.find();
-  console.log(apis);
-  console.log("apis hit");
-  console.log(req.user);
-  res.status(200).json({
-    message: "All the Apis",
-    apis,
-  });
+  try {
+    const apis = await ApiModel.find();
+    console.log(apis);
+    console.log("apis hit");
+    console.log(req.user);
+    res.status(200).json({
+      success: true,
+      message: "All the Apis",
+      apis,
+    });
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      message: `${err.message}`,
+    });
+  }
 };
 
 exports.getStudioApisController = async (req, res) => {
@@ -120,12 +128,14 @@ exports.getStudioApisController = async (req, res) => {
     }
 
     res.status(200).json({
+      success: true,
       message: "APIs by the publisher",
       api,
     });
   } catch (error) {
     console.error("Error fetching studio APIs:", error);
     res.status(500).json({
+      success: false,
       message: "Failed to fetch APIs",
       error: error.message,
     });
@@ -389,7 +399,6 @@ exports.UpdateApiController = async (req, res) => {
     api.version = version;
     api.category = category;
     api.ratelimit = rateLimit;
-    
 
     // let logoUrl = null;
 
